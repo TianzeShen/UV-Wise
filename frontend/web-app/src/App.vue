@@ -1,5 +1,4 @@
 <script setup>
-import AppHero from './components/AppHero.vue'
 import PageNav from './components/PageNav.vue'
 import { useUvWiseApp } from './composables/useUvWiseApp'
 import AwarenessPage from './pages/AwarenessPage.vue'
@@ -10,7 +9,6 @@ import TimerPage from './pages/TimerPage.vue'
 const {
   activePage,
   adviceLoading,
-  apiBaseUrl,
   awarenessData,
   awarenessLoading,
   awarenessSummary,
@@ -18,17 +16,18 @@ const {
   clothingItems,
   dashboardHighlights,
   educationCard,
-  locationStatus,
+  isResolvingLocation,
+  locationQuery,
+  locationSearchStatus,
   pages,
   personalizedAdvice,
   protectionTimerActive,
-  requestLocation,
   resetProtectionTimer,
+  searchLocationByName,
   skinType,
   skinTypes,
   startProtectionTimer,
   timerDisplay,
-  useMockData,
   userLocation,
   uvCategory,
   uvData,
@@ -37,19 +36,13 @@ const {
 </script>
 
 <template>
-  <div class="app-shell">
-    <AppHero
-      :api-base-url="apiBaseUrl"
-      :location-status="locationStatus"
-      :use-mock-data="useMockData"
-      @refresh="requestLocation"
-      @update:api-base-url="apiBaseUrl = $event"
-      @update:use-mock-data="useMockData = $event"
-    />
-
+  <div class="app-shell" :class="{ 'dashboard-active': activePage === 'dashboard' }">
     <PageNav
       :active-page="activePage"
       :pages="pages"
+      :uv-category="uvCategory"
+      :uv-value="uvData.uv_index"
+      :uv-color="uvData.color_code"
       @update:active-page="activePage = $event"
     />
 
@@ -58,10 +51,15 @@ const {
         v-if="activePage === 'dashboard'"
         :clothing-items="clothingItems"
         :dashboard-highlights="dashboardHighlights"
+        :is-resolving-location="isResolvingLocation"
+        :location-query="locationQuery"
+        :location-search-status="locationSearchStatus"
         :user-location="userLocation"
         :uv-category="uvCategory"
         :uv-data="uvData"
         :uv-loading="uvLoading"
+        @search-location="searchLocationByName"
+        @update:location-query="locationQuery = $event"
       />
 
       <AwarenessPage

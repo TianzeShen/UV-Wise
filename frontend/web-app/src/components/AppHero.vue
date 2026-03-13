@@ -1,28 +1,12 @@
 <script setup>
 defineProps({
-  apiBaseUrl: {
-    type: String,
-    required: true,
-  },
   locationStatus: {
     type: String,
     required: true,
   },
-  useMockData: {
-    type: Boolean,
-    required: true,
-  },
 })
 
-const emit = defineEmits(['refresh', 'update:apiBaseUrl', 'update:useMockData'])
-
-function handleApiBaseUrl(event) {
-  emit('update:apiBaseUrl', event.target.value)
-}
-
-function handleUseMockData(event) {
-  emit('update:useMockData', event.target.checked ? false : true)
-}
+defineEmits(['refresh'])
 </script>
 
 <template>
@@ -38,28 +22,19 @@ function handleUseMockData(event) {
 
     <div class="hero-actions">
       <div class="status-card">
-        <span class="status-label">Connection</span>
-        <strong>{{ useMockData ? 'Preview data' : 'Live updates' }}</strong>
+        <span class="status-label">Location status</span>
+        <strong>Ready for today's UV check</strong>
         <p>{{ locationStatus }}</p>
       </div>
 
-      <label class="toggle-card">
-        <span>Use live updates</span>
-        <input :checked="!useMockData" type="checkbox" @change="handleUseMockData" />
-        <span class="toggle-hint">Turn this on when real-time service data is available.</span>
-      </label>
+      <div class="toggle-card">
+        <span>What you'll get</span>
+        <span class="toggle-hint">
+          Live UV risk, simple protection advice, and practical planning support before you head outdoors.
+        </span>
+      </div>
 
-      <label class="input-card">
-        <span>Backend base URL</span>
-        <input
-          :value="apiBaseUrl"
-          type="text"
-          placeholder="http://localhost:8000"
-          @input="handleApiBaseUrl"
-        />
-      </label>
-
-      <button class="ghost-button" @click="$emit('refresh')">Refresh location and data</button>
+      <button class="ghost-button" @click="$emit('refresh')">Update my location</button>
     </div>
   </header>
 </template>

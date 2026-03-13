@@ -8,12 +8,12 @@ const pages = [
 ]
 
 const skinTypes = [
-  { value: 1, label: 'Type I', note: 'Very fair, always burns' },
-  { value: 2, label: 'Type II', note: 'Fair, burns easily' },
-  { value: 3, label: 'Type III', note: 'Medium, sometimes burns' },
-  { value: 4, label: 'Type IV', note: 'Olive, rarely burns' },
-  { value: 5, label: 'Type V', note: 'Brown, very rarely burns' },
-  { value: 6, label: 'Type VI', note: 'Deeply pigmented, almost never burns' },
+  { value: 1, label: 'Type I', note: 'Very fair, always burns', tone: '#f6d8c6', accent: '#fff2e8' },
+  { value: 2, label: 'Type II', note: 'Fair, burns easily', tone: '#ebc2a5', accent: '#f8e5d4' },
+  { value: 3, label: 'Type III', note: 'Medium, sometimes burns', tone: '#cf9f79', accent: '#e7c6a9' },
+  { value: 4, label: 'Type IV', note: 'Olive, rarely burns', tone: '#b57e56', accent: '#d9ab82' },
+  { value: 5, label: 'Type V', note: 'Brown, very rarely burns', tone: '#8a5a3b', accent: '#b18462' },
+  { value: 6, label: 'Type VI', note: 'Deeply pigmented, almost never burns', tone: '#5b3928', accent: '#7a5440' },
 ]
 
 export function useUvWiseApp() {
@@ -21,6 +21,9 @@ export function useUvWiseApp() {
   const apiBaseUrl = ref('http://localhost:8000')
   const useMockData = ref(true)
   const locationStatus = ref('Requesting location permission...')
+  const locationQuery = ref('Melbourne, VIC')
+  const locationSearchStatus = ref('')
+  const isResolvingLocation = ref(false)
   const adviceLoading = ref(false)
   const awarenessLoading = ref(false)
   const uvLoading = ref(false)
@@ -134,16 +137,70 @@ export function useUvWiseApp() {
     }
   })
 
+  function getMockUvMeta(uvValue) {
+    if (uvValue < 3) {
+      return {
+        color: '#45b36b',
+        alert: 'UV is low right now. Basic protection is enough for short outdoor time.',
+        action: 'Enjoy the outdoors and keep sunglasses handy.',
+        dosage: '1 teaspoon for face and neck',
+        clothing: 'Sunglasses and a light layer if staying out longer',
+      }
+    }
+    if (uvValue < 6) {
+      return {
+        color: '#d4b632',
+        alert: 'Moderate UV detected. Sunscreen and shade are recommended.',
+        action: 'Use SPF and look for shade around midday.',
+        dosage: '1.5 teaspoons for face and neck',
+        clothing: 'Sunglasses, a cap, and breathable sleeves',
+      }
+    }
+    if (uvValue < 8) {
+      return {
+        color: '#ef8f2f',
+        alert: 'High UV conditions. Unprotected skin can burn quickly.',
+        action: 'Reduce long exposure between late morning and mid-afternoon.',
+        dosage: '2 teaspoons for face and neck',
+        clothing: 'Wide-brim hat, sunglasses, and long sleeves',
+      }
+    }
+    if (uvValue < 11) {
+      return {
+        color: '#d94841',
+        alert: 'Very high UV conditions. Find shade and protect exposed skin now.',
+        action: 'Avoid extended outdoor time between 11 AM and 3 PM.',
+        dosage: '2 teaspoons for face and neck',
+        clothing: 'Wide-brim hat, UV-rated sunglasses, and long sleeves',
+      }
+    }
+    return {
+      color: '#7e57c2',
+      alert: 'Extreme UV conditions. Minimise outdoor exposure where possible.',
+      action: 'Stay indoors during peak hours or keep in full shade.',
+      dosage: '2.5 teaspoons for face and neck',
+      clothing: 'Full-coverage clothing, sunglasses, and a broad-brim hat',
+    }
+  }
+
+  function calculateMockUv(lat, lon) {
+    const seed = Math.abs(Math.round(lat * 13 + lon * 7))
+    const uv = ((seed % 110) / 10) + 1
+    return Number(Math.min(12, Math.max(1, uv)).toFixed(1))
+  }
+
   function createMockUvResponse() {
+    const uvValue = calculateMockUv(userLocation.lat, userLocation.lon)
+    const meta = getMockUvMeta(uvValue)
     return {
       location: userLocation.name,
-      uv_index: 8.5,
-      color_code: '#d94841',
-      alert_message: 'Your skin will start damaging in 12 minutes. Find shade now.',
+      uv_index: uvValue,
+      color_code: meta.color,
+      alert_message: meta.alert,
       protection_guidance: {
-        sunscreen_dosage: '2 teaspoons for face and neck',
-        clothing: 'Wide-brimmed hat, UV-rated sunglasses, and long sleeves',
-        action: 'Avoid outdoors between 11 AM and 3 PM',
+        sunscreen_dosage: meta.dosage,
+        clothing: meta.clothing,
+        action: meta.action,
       },
     }
   }
@@ -296,10 +353,9 @@ export function useUvWiseApp() {
     }
   }
 
-  function refreshAllData() {
-    loadUvForecast()
-    loadAwareness()
-    loadPersonalizedAdvice()
+  async function refreshAllData() {
+    await loadUvForecast()
+    await Promise.all([loadAwareness(), loadPersonalizedAdvice()])
   }
 
   function requestLocation() {
@@ -313,6 +369,8 @@ export function useUvWiseApp() {
       (position) => {
         userLocation.lat = Number(position.coords.latitude.toFixed(4))
         userLocation.lon = Number(position.coords.longitude.toFixed(4))
+        locationQuery.value = userLocation.name
+        locationSearchStatus.value = ''
         locationStatus.value = 'Live location detected successfully.'
         refreshAllData()
       },
@@ -326,6 +384,44 @@ export function useUvWiseApp() {
         maximumAge: 300000,
       },
     )
+  }
+
+  async function searchLocationByName() {
+    const query = locationQuery.value.trim()
+    if (!query) {
+      locationSearchStatus.value = 'Enter a location name to search.'
+      return
+    }
+
+    isResolvingLocation.value = true
+    locationSearchStatus.value = 'Searching for location...'
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`,
+      )
+      if (!response.ok) {
+        throw new Error(`Location search failed: ${response.status}`)
+      }
+
+      const results = await response.json()
+      if (!results.length) {
+        locationSearchStatus.value = 'No matching location found. Try a city, suburb, or postcode.'
+        return
+      }
+
+      const result = results[0]
+      userLocation.lat = Number(Number(result.lat).toFixed(4))
+      userLocation.lon = Number(Number(result.lon).toFixed(4))
+      userLocation.name = result.display_name.split(',').slice(0, 2).join(', ')
+      locationQuery.value = userLocation.name
+      locationSearchStatus.value = `Showing UV for ${userLocation.name}.`
+      await refreshAllData()
+    } catch {
+      locationSearchStatus.value = 'Location search is unavailable right now. Please try again.'
+    } finally {
+      isResolvingLocation.value = false
+    }
   }
 
   function startProtectionTimer() {
@@ -379,12 +475,16 @@ export function useUvWiseApp() {
     clothingItems,
     dashboardHighlights,
     educationCard,
+    isResolvingLocation,
     locationStatus,
+    locationQuery,
+    locationSearchStatus,
     pages,
     personalizedAdvice,
     protectionTimerActive,
     requestLocation,
     resetProtectionTimer,
+    searchLocationByName,
     skinType,
     skinTypes,
     startProtectionTimer,

@@ -35,26 +35,28 @@ defineEmits(['update:skinType'])
       badge="Personalized advice"
     />
 
-    <div class="dashboard-grid protection-grid">
-      <article class="feature-card selector-card">
-        <p class="card-label">Skin type selection</p>
-        <h3>Choose Fitzpatrick skin type</h3>
-        <div class="skin-grid">
-          <button
-            v-for="type in skinTypes"
-            :key="type.value"
-            class="skin-type-button"
-            :class="{ selected: skinType === type.value }"
-            @click="$emit('update:skinType', type.value)"
-          >
-            <strong>{{ type.label }}</strong>
-            <span>{{ type.note }}</span>
-          </button>
-        </div>
-        <p class="helper-text">Your selection is saved on this device for quicker access next time.</p>
-      </article>
+    <div class="protection-picker">
+      <p class="card-label">Choose the skin tone closest to yours</p>
+      <div class="skin-grid skin-grid-inline">
+        <button
+          v-for="type in skinTypes"
+          :key="type.value"
+          class="skin-type-button skin-type-button-swatch"
+          :class="{ selected: skinType === type.value }"
+          :style="{
+            '--skin-tone': type.tone,
+            '--skin-accent': type.accent,
+          }"
+          :aria-label="`${type.label}: ${type.note}`"
+          @click="$emit('update:skinType', type.value)"
+        >
+          <span class="skin-swatch" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
 
-      <article class="feature-card advice-card">
+    <div class="dashboard-grid protection-grid">
+      <article class="feature-card advice-card advice-card-wide">
         <p class="card-label">Current advice</p>
         <h3>{{ personalizedAdvice.skin_type_desc }}</h3>
         <div class="advice-copy">
