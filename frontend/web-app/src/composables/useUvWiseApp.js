@@ -17,7 +17,10 @@ const skinTypes = [
 ]
 
 export function useUvWiseApp() {
-  const activePage = ref('dashboard')
+  const savedActivePage = localStorage.getItem('uvwise-active-page')
+  const activePage = ref(
+    pages.some((page) => page.id === savedActivePage) ? savedActivePage : 'dashboard',
+  )
   const apiBaseUrl = ref('http://localhost:8000')
   const useMockData = ref(true)
   const locationStatus = ref('Requesting location permission...')
@@ -595,6 +598,10 @@ export function useUvWiseApp() {
   watch(skinType, () => {
     localStorage.setItem('uvwise-skin-type', String(skinType.value))
     loadPersonalizedAdvice()
+  })
+
+  watch(activePage, () => {
+    localStorage.setItem('uvwise-active-page', activePage.value)
   })
 
   watch([timerRemainingMs, protectionTimerEnd], () => {
