@@ -1,0 +1,67 @@
+1.0 Epic - Track UV Levels
+As a young adult, I want to be able to know the UV levels so that I can prevent skin cancer.
+US1.1  As a young adult spending time outdoors, I want to receive real-time, localised UV level alerts so that I know exactly when the radiation becomes dangerous and can take immediate action to protect my skin
+Description : Must Have. Call API to view the UV index based on location. Colour accordingly to level. To design a feature that doesn't just show a number (e.g., UV 8), but translates that data into a 'Human Language' alert (e.g., 'Your skin will start damaging in 12 minutes—find shade now')
+Benefit: Transforms an invisible threat (UV radiation) into a tangible metric. A young adult might not feel the sun's intensity on a cool, windy day, but seeing a "High" UV rating prompts them to apply sunscreen or seek shade. Relatable language. 
+
+Acceptance criteria : 
+Location detection
+UV API retrieval
+Color-coded UV display
+Human readable alert
+
+Epic 2.0 Raising awareness
+As a young adult, I want to access tools that translate complex Australian UV data into relatable so that I can empower myself and my social circle to act as sun-safety influencers.
+
+US2.1 As a young adult, I want to understand about Australia UV impacts and skin myths so that I can raise awareness to my friends. 
+
+Description : Must Have. To show 2 visualisations of the impacts of skin cancer and the trend of heat in Australia. Database.
+Benefits: Instead of telling young adults what to do, to show them visually on a graph the impacts of UV. When they understand the 'why,' they stop following orders and start making smart choices for themselves. By "raising awareness," the user becomes a hub for their friend group. They shift the responsibility from the individual to the group, making reapplication a collective social habit rather than a chore. 
+
+Acceptance criteria : 
+Educational Dashboard
+Skin Cancer Statistics
+UV Trend Visualization
+Myth vs Fact Information
+
+US2.2 As a young adult, I want to understand the relationship between my skin color and UV absorption, so that I can confidently educate my friends and shift our group's attitude toward sun protection.
+
+Acceptance criteria : 
+Skin type selection.
+Personalized advice.
+Educational explanation.
+
+Description : Should Have. Customisation tool based on skin colour and UV rather than generic warnings that young adults may ignore. Database. 
+Benefit: Tailoring advice for different skin tones provides long-term preventative health over short-term aesthetic trends. 
+
+3.0 EPIC Prevention
+
+3.0. As a young adult,  I want to be able to manage my  sunscreen usage and clothing so that I can plan my day outdoors accordingly.
+
+US3.1 As a young adult, I want to translate the t UV Index numbers into "sunscreen dosage" so that I can confidently protect myself against Australian UV levels without the guesswork.
+Description : Should Have. Calculate estimate of teaspoons or pumps of sunscreen depending on UV index.
+Benefit:  The transition from abstract data to concrete action. Most people understand that a "UV Index of 11" is high, but they don't know exactly what that means for their physical behavior.
+
+Acceptance criteria : 
+UV based dosage
+Clear measurement
+
+US3.2 As a young adult, I would like to track my sunscreen reminders so that I can raise awareness to my friends. 
+Description - Should Have. To set reminders of when to apply .
+Benefit: By prompting the user at critical intervals, we ensure continuous coverage and eliminate the 'vulnerability window' that lead to late-day sun damage. 
+
+Acceptance criteria : 
+Reminder setup
+Reminder notification
+Reminder Frequency
+Reminder Visibility
+
+US3.3 As a young adult, I want to select the appropriate clothing to wear depending on the UV index so that I can protect my skin from the sun.
+Description : Must Have. Depending on UV indexes provide recommendations on clothes to wear.
+Benefit: Learning to select the right materials allows the user to stay cool while blocking radiation. It empowers them to choose "sun-smart fashion" that balances thermal comfort with maximum UV defense.
+
+Acceptance Criteria :
+UV Index Retrieval
+Clothing Recommendation
+Visual Guidance
+User Awareness
