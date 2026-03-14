@@ -1,4 +1,6 @@
 from app.schemas.uv import UVResponse, ProtectionGuidance
+import httpx
+from app.core.config import settings
 
 class UVService:
     @staticmethod
@@ -53,18 +55,31 @@ class UVService:
     @staticmethod
     async def get_uv_forecast(lat: float, lon: float) -> UVResponse:
         """
-        Mock implementation.
-        Currently returns mock data based on simple logic
+        Fetch real-time UV data from OpenWeather API.
         """
-        # Mock logic: UV roughly higher if lat is closer to 0 (Equator)
-        base_uv = 12 - (abs(lat) / 5) 
-        current_uv = max(0, round(base_uv, 1)) # Ensure not negative
+        api_key = settings.OPENWEATHER_API_KEY
+        url = f"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=minutely,hourly,daily,alerts&appid={api_key}"
         
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url)
+                response.raise_for_status()
+                data = response.json()
+                
+                # Extract UV Index from 'current' field
+                current_uv = float(data.get("current", {}).get("uvi", 0))
+                # Timezone name as location placeholder
+                location_name = data.get("timezone", f"Lat: {lat}, Lon: {lon}")
+                
+        except Exception as e:
+            print(f"Error fetching OpenWeather data: {e}")
+            raise Exception("Failed to fetch UV data") 
+
         color, alert = UVService.get_uv_level_description(current_uv)
         guidance = UVService.calculate_protection_guidance(current_uv)
         
         return UVResponse(
-            location=f"Lat: {lat}, Lon: {lon}", # Placeholder location name
+            location=location_name,
             uv_index=current_uv,
             color_code=color,
             alert_message=alert,
