@@ -21,8 +21,8 @@ export function useUvWiseApp() {
   const activePage = ref(
     pages.some((page) => page.id === savedActivePage) ? savedActivePage : 'dashboard',
   )
-  const apiBaseUrl = ref('http://localhost:8000')
-  const useMockData = ref(true)
+  const apiBaseUrl = ref('https://uv-wise.onrender.com')
+  const useMockData = ref(false)
   const locationStatus = ref('Requesting location permission...')
   const locationQuery = ref('Melbourne, VIC')
   const locationSearchStatus = ref('')
