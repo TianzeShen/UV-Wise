@@ -147,15 +147,19 @@ export function useUvWiseApp() {
 
     const latestCancer =
       awarenessData.melanoma_trend.data[awarenessData.melanoma_trend.data.length - 1]
+    
+    // Safety check for reduce
     const peakUvYear = awarenessData.uv_history.labels.reduce(
       (best, label, index) => {
-        if (awarenessData.uv_history.max[index] > awarenessData.uv_history.max[best.index]) {
+        const maxArr = awarenessData.uv_history.max
+        if (maxArr && maxArr[index] > maxArr[best.index]) {
           return { label, index }
         }
         return best
       },
       { label: awarenessData.uv_history.labels[0], index: 0 },
     )
+    
     const topBehaviourIndex = awarenessData.protection_behaviours.percentages.indexOf(
       Math.max(...awarenessData.protection_behaviours.percentages),
     )
@@ -180,7 +184,50 @@ export function useUvWiseApp() {
   }
 
   function createMockAwarenessResponse() {
-    return {}
+    return {
+      statistics: {
+        melanoma_trend: {
+          labels: [
+            '1982', '1983', '1984', '1985', '1986', '1987', '1988', '1989', '1990', '1991',
+            '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999', '2000', '2001',
+            '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011',
+            '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021',
+            '2022', '2023',
+          ],
+          data: [
+            425, 419, 412, 434, 484, 546, 607, 514, 512, 541,
+            508, 483, 544, 617, 579, 614, 435, 533, 472, 432,
+            495, 430, 470, 392, 394, 352, 362, 358, 240, 281,
+            295, 277, 281, 244, 264, 241, 293, 311, 277, 266,
+            272, 278,
+          ],
+        },
+        uv_history: {
+          labels: [
+            '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015',
+            '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024',
+          ],
+          average: [0.98, 1.21, 1.22, 1.23, 1.09, 1.06, 1.12, 1.18, 1.14, 1.16, 1.12, 1.16, 1.11, 1.15, 1.14, 1.14, 1.10, 1.06],
+          max: [3.45, 3.54, 3.46, 3.17, 3.14, 3.04, 3.57, 3.07, 3.21, 3.10, 3.20, 3.13, 3.00, 3.00, 3.32, 3.14, 3.07, 3.03],
+          min: [0.07, 0.13, 0.11, 0.06, 0.07, 0.08, 0.13, 0.12, 0.07, 0.09, 0.13, 0.09, 0.09, 0.08, 0.07, 0.09, 0.11, 0.09],
+        },
+        protection_behaviours: {
+          labels: [
+            'Stayed in the shade',
+            'Used SPF30 or higher sunscreen',
+            'Sunglasses',
+            'Broad brimmed hat',
+            'Clothing covering legs',
+            'Clothing covering arms',
+          ],
+          percentages: [56.3, 47.1, 42.3, 38.0, 33.9, 26.7],
+        },
+      },
+      education: {
+        myth: "You can't get sunburnt on a cloudy day.",
+        fact: 'Up to 80% of UV radiation can pass through light clouds.',
+      },
+    }
   }
 
   function createMockAdviceResponse() {
@@ -308,15 +355,30 @@ export function useUvWiseApp() {
     try {
       // Always use local data for awareness
       const localData = await loadLocalAwarenessCsv()
-      awarenessData.melanoma_trend = localData.melanoma_trend
-      awarenessData.uv_history = localData.uv_history
+      const mock = createMockAwarenessResponse()
+      
+      awarenessData.melanoma_trend = {
+        labels: localData.melanoma_trend.labels || [],
+        data: localData.melanoma_trend.data || []
+      }
+      awarenessData.uv_history = {
+        labels: localData.uv_history.labels || [],
+        average: localData.uv_history.average || [],
+        max: localData.uv_history.max || [],
+        min: localData.uv_history.min || [],
+        max_dates: localData.uv_history.max_dates || [],
+        min_dates: localData.uv_history.min_dates || [],
+        daily_dates: localData.uv_history.daily_dates || [],
+        daily_values: localData.uv_history.daily_values || []
+      }
       
       awarenessData.protection_behaviours = {
-        labels: [],
-        percentages: [],
+        labels: mock.statistics.protection_behaviours.labels || [],
+        percentages: mock.statistics.protection_behaviours.percentages || []
       }
-      educationCard.myth = 'Loading...'
-      educationCard.fact = 'Loading...'
+      
+      educationCard.myth = mock.education.myth
+      educationCard.fact = mock.education.fact
     } catch (e) {
       console.error('Failed to load awareness data', e)
     } finally {
