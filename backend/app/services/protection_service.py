@@ -6,7 +6,7 @@ class ProtectionService:
         """
         Logic for generating advice based on skin type + UV.
         """
-        # Risk levels based on skin type (Fitzpatrick 1 = most sensitive, 6 = most resilient)
+        # Risk levels based on skin type
         risk_map = {
             1: "Burns easily, never tans",
             2: "Burns easily, tans minimally",
@@ -31,8 +31,48 @@ class ProtectionService:
         else:
             tips += " Reapply every 90 mins."
 
+        # Sunscreen and Clothing Logic
+        sunscreen = ""
+        clothing = ""
+
+        if current_uv < 3:
+            if skin_type <= 2:
+                sunscreen = "Apply if outdoors for >1 hour."
+                clothing = "Sunglasses recommended."
+            else:
+                sunscreen = "Not strictly necessary."
+                clothing = "No special protection needed."
+        
+        elif 3 <= current_uv < 6:
+            if skin_type <= 2:
+                sunscreen = "1 teaspoon for face and neck."
+                clothing = "Hat and sunglasses."
+            elif skin_type <= 4:
+                sunscreen = "0.5 teaspoon for face and neck."
+                clothing = "Hat and sunglasses."
+            else:
+                sunscreen = "Optional for long exposure."
+                clothing = "Optional hat."
+        
+        elif 6 <= current_uv < 11:
+            if skin_type <= 2:
+                sunscreen = "2 teaspoons + frequent reapplication."
+                clothing = "Long sleeves, hat, and sunglasses."
+            elif skin_type <= 4:
+                sunscreen = "1 teaspoon for face and neck."
+                clothing = "Long sleeves, hat, and sunglasses."
+            else:
+                sunscreen = "1 teaspoon for face and neck."
+                clothing = "Hat and sunglasses."
+        
+        else:  # current_uv >= 11
+            sunscreen = "2 teaspoons + cover all exposed skin."
+            clothing = "UV-protection clothing, hat, and sunglasses."
+
         return PersonalizedAdviceResponse(
             skin_type_desc=base_desc,
             risk_assessment=f"{risk_level} risk of sunburn today.",
-            personalized_tips=tips
+            personalized_tips=tips,
+            sunscreen_dosage=sunscreen,
+            clothing=clothing
         )

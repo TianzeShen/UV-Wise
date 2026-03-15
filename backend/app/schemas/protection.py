@@ -10,3 +10,5 @@ class PersonalizedAdviceResponse(BaseModel):
     skin_type_desc: str = Field(..., example="Fair skin, burns easily")
     risk_assessment: str = Field(..., example="High risk of sunburn")
     personalized_tips: str = Field(..., example="Reapply sunscreen every 90 minutes")
+    sunscreen_dosage: str = Field(..., example="1 teaspoon for face and neck")
+    clothing: str = Field(..., example="Hat and sunglasses")

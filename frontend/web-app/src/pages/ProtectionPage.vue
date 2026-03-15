@@ -66,11 +66,11 @@ defineEmits(['update:skinType'])
           </div>
           <div>
             <span class="sub-label">Sunscreen Dosage</span>
-            <p>{{ uvData.protection_guidance.sunscreen_dosage }}</p>
+            <p>{{ personalizedAdvice.sunscreen_dosage }}</p>
           </div>
           <div>
             <span class="sub-label">Recommended Clothing</span>
-            <p>{{ uvData.protection_guidance.clothing }}</p>
+            <p>{{ personalizedAdvice.clothing }}</p>
           </div>
           <div>
             <span class="sub-label">Current UV context</span>

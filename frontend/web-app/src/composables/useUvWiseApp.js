@@ -22,7 +22,6 @@ export function useUvWiseApp() {
     pages.some((page) => page.id === savedActivePage) ? savedActivePage : 'dashboard',
   )
   const apiBaseUrl = ref('https://uv-wise.onrender.com')
-  const useMockData = ref(false)
   const locationStatus = ref('Requesting location permission...')
   const locationQuery = ref('Melbourne, VIC')
   const locationSearchStatus = ref('')
@@ -82,6 +81,8 @@ export function useUvWiseApp() {
     skin_type_desc: 'Loading...',
     risk_assessment: 'Loading...',
     personalized_tips: 'Loading...',
+    sunscreen_dosage: 'Loading...',
+    clothing: 'Loading...',
   })
 
   const uvCategory = computed(() => {
@@ -133,8 +134,11 @@ export function useUvWiseApp() {
 
   const awarenessSummary = computed(() => {
     if (
+      !awarenessData.melanoma_trend.data ||
       !awarenessData.melanoma_trend.data.length ||
+      !awarenessData.uv_history.labels ||
       !awarenessData.uv_history.labels.length ||
+      !awarenessData.protection_behaviours.percentages ||
       !awarenessData.protection_behaviours.percentages.length
     ) {
       return {
@@ -167,154 +171,23 @@ export function useUvWiseApp() {
   })
 
   function getMockUvMeta(uvValue) {
-    if (uvValue < 3) {
-      return {
-        color: '#45b36b',
-        alert: 'UV is low right now. Basic protection is enough for short outdoor time.',
-        action: 'Enjoy the outdoors and keep sunglasses handy.',
-        dosage: '1 teaspoon for face and neck',
-        clothing: 'Sunglasses and a light layer if staying out longer',
-      }
-    }
-    if (uvValue < 6) {
-      return {
-        color: '#d4b632',
-        alert: 'Moderate UV detected. Sunscreen and shade are recommended.',
-        action: 'Use SPF and look for shade around midday.',
-        dosage: '1.5 teaspoons for face and neck',
-        clothing: 'Sunglasses, a cap, and breathable sleeves',
-      }
-    }
-    if (uvValue < 8) {
-      return {
-        color: '#ef8f2f',
-        alert: 'High UV conditions. Unprotected skin can burn quickly.',
-        action: 'Reduce long exposure between late morning and mid-afternoon.',
-        dosage: '2 teaspoons for face and neck',
-        clothing: 'Wide-brim hat, sunglasses, and long sleeves',
-      }
-    }
-    if (uvValue < 11) {
-      return {
-        color: '#d94841',
-        alert: 'Very high UV conditions. Find shade and protect exposed skin now.',
-        action: 'Avoid extended outdoor time between 11 AM and 3 PM.',
-        dosage: '2 teaspoons for face and neck',
-        clothing: 'Wide-brim hat, UV-rated sunglasses, and long sleeves',
-      }
-    }
-    return {
-      color: '#7e57c2',
-      alert: 'Extreme UV conditions. Minimise outdoor exposure where possible.',
-      action: 'Stay indoors during peak hours or keep in full shade.',
-      dosage: '2.5 teaspoons for face and neck',
-      clothing: 'Full-coverage clothing, sunglasses, and a broad-brim hat',
-    }
+    return {}
   }
 
   function calculateMockUv(lat, lon) {
-    const seed = Math.abs(Math.round(lat * 13 + lon * 7))
-    const uv = ((seed % 110) / 10) + 1
-    return Number(Math.min(12, Math.max(1, uv)).toFixed(1))
+    return 0
   }
 
   function createMockUvResponse() {
-    const uvValue = calculateMockUv(userLocation.lat, userLocation.lon)
-    const meta = getMockUvMeta(uvValue)
-    return {
-      location: userLocation.name,
-      uv_index: uvValue,
-      color_code: meta.color,
-      alert_message: meta.alert,
-      protection_guidance: {
-        sunscreen_dosage: meta.dosage,
-        clothing: meta.clothing,
-        action: meta.action,
-      },
-    }
+    return {}
   }
 
   function createMockAwarenessResponse() {
-    return {
-      statistics: {
-        melanoma_trend: {
-          labels: [
-            '1982', '1983', '1984', '1985', '1986', '1987', '1988', '1989', '1990', '1991',
-            '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999', '2000', '2001',
-            '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011',
-            '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021',
-            '2022', '2023',
-          ],
-          data: [
-            425, 419, 412, 434, 484, 546, 607, 514, 512, 541,
-            508, 483, 544, 617, 579, 614, 435, 533, 472, 432,
-            495, 430, 470, 392, 394, 352, 362, 358, 240, 281,
-            295, 277, 281, 244, 264, 241, 293, 311, 277, 266,
-            272, 278,
-          ],
-        },
-        uv_history: {
-          labels: [
-            '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015',
-            '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024',
-          ],
-          average: [0.98, 1.21, 1.22, 1.23, 1.09, 1.06, 1.12, 1.18, 1.14, 1.16, 1.12, 1.16, 1.11, 1.15, 1.14, 1.14, 1.10, 1.06],
-          max: [3.45, 3.54, 3.46, 3.17, 3.14, 3.04, 3.57, 3.07, 3.21, 3.10, 3.20, 3.13, 3.00, 3.00, 3.32, 3.14, 3.07, 3.03],
-          min: [0.07, 0.13, 0.11, 0.06, 0.07, 0.08, 0.13, 0.12, 0.07, 0.09, 0.13, 0.09, 0.09, 0.08, 0.07, 0.09, 0.11, 0.09],
-        },
-        protection_behaviours: {
-          labels: [
-            'Stayed in the shade',
-            'Used SPF30 or higher sunscreen',
-            'Sunglasses',
-            'Broad brimmed hat',
-            'Clothing covering legs',
-            'Clothing covering arms',
-          ],
-          percentages: [56.3, 47.1, 42.3, 38.0, 33.9, 26.7],
-        },
-      },
-      education: {
-        myth: "You can't get sunburnt on a cloudy day.",
-        fact: 'Up to 80% of UV radiation can pass through light clouds.',
-      },
-    }
+    return {}
   }
 
   function createMockAdviceResponse() {
-    const map = {
-      1: {
-        skin_type_desc: 'Burns easily, never tans',
-        risk_assessment: 'Very high burn risk under Australian UV conditions.',
-        personalized_tips: 'Reapply sunscreen every 60-90 minutes and prioritise shade.',
-      },
-      2: {
-        skin_type_desc: 'Burns easily, tans minimally',
-        risk_assessment: 'High risk of sunburn and long-term DNA damage.',
-        personalized_tips: 'Increase sunscreen reapplication frequency to every 90 minutes.',
-      },
-      3: {
-        skin_type_desc: 'Sometimes burns, gradually tans',
-        risk_assessment: 'Moderate risk, especially around midday UV peaks.',
-        personalized_tips: 'Use SPF 50+ and wear a hat during extended outdoor time.',
-      },
-      4: {
-        skin_type_desc: 'Rarely burns, tans easily',
-        risk_assessment: 'Lower burn risk, but UV damage still accumulates.',
-        personalized_tips: 'Keep using sunscreen and protective clothing on high UV days.',
-      },
-      5: {
-        skin_type_desc: 'Very rarely burns, tans very easily',
-        risk_assessment: 'Sunburn is less common, but UV exposure still harms skin.',
-        personalized_tips: 'Use broad-spectrum sunscreen and do not skip eye protection.',
-      },
-      6: {
-        skin_type_desc: 'Almost never burns, deeply pigmented',
-        risk_assessment: 'Visible burning may be rare, but cumulative UV damage still matters.',
-        personalized_tips: 'Maintain sun-safe habits and use sunscreen during prolonged exposure.',
-      },
-    }
-    return map[skinType.value] || map[2]
+    return {}
   }
 
   function normaliseUvResponse(payload) {
@@ -411,17 +284,19 @@ export function useUvWiseApp() {
   async function loadUvForecast() {
     uvLoading.value = true
     try {
-      if (useMockData.value) {
-        normaliseUvResponse(createMockUvResponse())
-        return
-      }
       const payload = await fetchJson(
         `${apiBaseUrl.value}/api/v1/uv/forecast?lat=${userLocation.lat}&lon=${userLocation.lon}`,
       )
       normaliseUvResponse(payload)
-    } catch {
-      useMockData.value = true
-      normaliseUvResponse(createMockUvResponse())
+    } catch (e) {
+      console.error('Failed to load UV forecast', e)
+      uvData.alert_message = 'Failed to load UV data. Please check your connection.'
+      uvData.uv_index = null
+      uvData.protection_guidance = {
+        sunscreen_dosage: 'Unavailable',
+        clothing: 'Unavailable',
+        action: 'Unavailable',
+      }
     } finally {
       uvLoading.value = false
     }
@@ -432,12 +307,15 @@ export function useUvWiseApp() {
     try {
       // Always use local data for awareness
       const localData = await loadLocalAwarenessCsv()
-      const mock = createMockAwarenessResponse()
       awarenessData.melanoma_trend = localData.melanoma_trend
       awarenessData.uv_history = localData.uv_history
-      awarenessData.protection_behaviours = mock.statistics.protection_behaviours
-      educationCard.myth = mock.education.myth
-      educationCard.fact = mock.education.fact
+      
+      awarenessData.protection_behaviours = {
+        labels: [],
+        percentages: [],
+      }
+      educationCard.myth = 'Loading...'
+      educationCard.fact = 'Loading...'
     } catch (e) {
       console.error('Failed to load awareness data', e)
     } finally {
@@ -448,10 +326,6 @@ export function useUvWiseApp() {
   async function loadPersonalizedAdvice() {
     adviceLoading.value = true
     try {
-      if (useMockData.value) {
-        Object.assign(personalizedAdvice, createMockAdviceResponse())
-        return
-      }
       const payload = await fetchJson(`${apiBaseUrl.value}/api/v1/protection/personalized-advice`, {
         method: 'POST',
         headers: {
@@ -463,9 +337,15 @@ export function useUvWiseApp() {
         }),
       })
       Object.assign(personalizedAdvice, payload)
-    } catch {
-      useMockData.value = true
-      Object.assign(personalizedAdvice, createMockAdviceResponse())
+    } catch (e) {
+      console.error('Failed to load personalized advice', e)
+      Object.assign(personalizedAdvice, {
+        skin_type_desc: 'Unavailable',
+        risk_assessment: 'Failed to load advice.',
+        personalized_tips: 'Please check your connection.',
+        sunscreen_dosage: 'Unavailable',
+        clothing: 'Unavailable',
+      })
     } finally {
       adviceLoading.value = false
     }
