@@ -16,14 +16,19 @@ const {
   clothingItems,
   dashboardHighlights,
   educationCard,
+  fetchLocationSuggestions,
   isResolvingLocation,
   locationQuery,
   locationSearchStatus,
+  locationSuggestions,
   pages,
   personalizedAdvice,
   protectionTimerActive,
+  requestLocation,
   resetProtectionTimer,
+  searchHistory,
   searchLocationByName,
+  selectLocation,
   skinType,
   skinTypes,
   startProtectionTimer,
@@ -54,11 +59,16 @@ const {
         :is-resolving-location="isResolvingLocation"
         :location-query="locationQuery"
         :location-search-status="locationSearchStatus"
+        :location-suggestions="locationSuggestions"
+        :search-history="searchHistory"
         :user-location="userLocation"
         :uv-category="uvCategory"
         :uv-data="uvData"
         :uv-loading="uvLoading"
         @search-location="searchLocationByName"
+        @fetch-suggestions="fetchLocationSuggestions"
+        @select-location="selectLocation"
+        @use-current-location="requestLocation"
         @update:location-query="locationQuery = $event"
       />
 

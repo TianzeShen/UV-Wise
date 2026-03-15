@@ -23,7 +23,7 @@ export function useUvWiseApp() {
   )
   const apiBaseUrl = ref('https://uv-wise.onrender.com')
   const locationStatus = ref('Requesting location permission...')
-  const locationQuery = ref('Melbourne, VIC')
+  const locationQuery = ref('')
   const locationSearchStatus = ref('')
   const isResolvingLocation = ref(false)
   const adviceLoading = ref(false)
@@ -33,6 +33,8 @@ export function useUvWiseApp() {
   const skinType = ref(Number(localStorage.getItem('uvwise-skin-type')) || 2)
   const protectionTimerEnd = ref(Number(localStorage.getItem('uvwise-timer-end')) || 0)
   const protectionTimerActive = ref(protectionTimerEnd.value > Date.now())
+  const searchHistory = ref(JSON.parse(localStorage.getItem('uvwise-search-history') || '[]'))
+  const locationSuggestions = ref([])
 
   const userLocation = reactive({
     lat: -37.8136,
@@ -186,7 +188,11 @@ export function useUvWiseApp() {
   }
 
   function normaliseUvResponse(payload) {
-    userLocation.name = payload.location || userLocation.name
+    // If we have a specific user-selected location name (e.g. from Nominatim), preserve it.
+    // Otherwise, fallback to what the backend returns.
+    if (!userLocation.name) {
+      userLocation.name = payload.location
+    }
     uvData.uv_index = payload.uv_index
     uvData.color_code = payload.color_code
     uvData.alert_message = payload.alert_message
@@ -362,7 +368,8 @@ export function useUvWiseApp() {
       (position) => {
         userLocation.lat = Number(position.coords.latitude.toFixed(4))
         userLocation.lon = Number(position.coords.longitude.toFixed(4))
-        locationQuery.value = userLocation.name
+        // Clear name so backend response can fill it
+        userLocation.name = '' 
         locationSearchStatus.value = ''
         locationStatus.value = 'Live location detected successfully.'
         refreshAllData()
@@ -377,6 +384,81 @@ export function useUvWiseApp() {
         maximumAge: 300000,
       },
     )
+  }
+
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371 // Radius of the earth in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180)
+    const dLon = (lon2 - lon1) * (Math.PI / 180)
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c // Distance in km
+  }
+
+  function addToSearchHistory(location) {
+    const exists = searchHistory.value.some((item) => item.name === location.name)
+    if (!exists) {
+      searchHistory.value.unshift(location)
+      if (searchHistory.value.length > 5) searchHistory.value.pop()
+      localStorage.setItem('uvwise-search-history', JSON.stringify(searchHistory.value))
+    }
+  }
+
+  async function fetchLocationSuggestions(query) {
+    if (!query || query.length < 3) {
+      locationSuggestions.value = []
+      return
+    }
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=10&countrycodes=au&q=${encodeURIComponent(query)}`,
+      )
+      if (!response.ok) return
+      const results = await response.json()
+
+      const formattedResults = results.map((r) => ({
+        lat: Number(r.lat),
+        lon: Number(r.lon),
+        name: r.display_name,
+        shortName: r.display_name.split(',').slice(0, 2).join(', '),
+      }))
+
+      // Sort by distance if userLocation is valid
+      if (userLocation.lat && userLocation.lon) {
+        formattedResults.forEach((r) => {
+          r.distance = calculateDistance(userLocation.lat, userLocation.lon, r.lat, r.lon)
+        })
+        formattedResults.sort((a, b) => a.distance - b.distance)
+      }
+
+      locationSuggestions.value = formattedResults
+    } catch (e) {
+      console.error('Failed to fetch suggestions', e)
+    }
+  }
+
+  async function selectLocation(location) {
+    userLocation.lat = location.lat
+    userLocation.lon = location.lon
+    userLocation.name = location.shortName || location.name
+    locationQuery.value = userLocation.name
+    locationSuggestions.value = []
+    // locationSearchStatus.value = `Showing UV for ${userLocation.name}.`
+    locationSearchStatus.value = ''
+    
+    addToSearchHistory({
+      name: userLocation.name,
+      lat: userLocation.lat,
+      lon: userLocation.lon,
+    })
+    
+    await refreshAllData()
   }
 
   async function searchLocationByName() {
@@ -408,7 +490,8 @@ export function useUvWiseApp() {
       userLocation.lon = Number(Number(result.lon).toFixed(4))
       userLocation.name = result.display_name.split(',').slice(0, 2).join(', ')
       locationQuery.value = userLocation.name
-      locationSearchStatus.value = `Showing UV for ${userLocation.name}.`
+      // locationSearchStatus.value = `Showing UV for ${userLocation.name}.`
+      locationSearchStatus.value = ''
       await refreshAllData()
     } catch {
       locationSearchStatus.value = 'Location search is unavailable right now. Please try again.'
@@ -476,12 +559,16 @@ export function useUvWiseApp() {
     locationStatus,
     locationQuery,
     locationSearchStatus,
+    locationSuggestions,
     pages,
     personalizedAdvice,
     protectionTimerActive,
     requestLocation,
     resetProtectionTimer,
+    searchHistory,
     searchLocationByName,
+    fetchLocationSuggestions,
+    selectLocation,
     skinType,
     skinTypes,
     startProtectionTimer,
