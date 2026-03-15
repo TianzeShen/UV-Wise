@@ -46,6 +46,15 @@ defineEmits(['clear', 'reset', 'start'])
           <li><strong>Reset:</strong> Restart the timer each time you reapply.</li>
           <li><strong>Clear:</strong> Stop the countdown when you are no longer outdoors.</li>
         </ul>
+        <p class="helper-text" style="margin-top: 14px;">
+          2-hour reapplication is recommended by
+          <a
+            href="https://www.cancer.org.au/cancer-information/causes-and-prevention/sun-safety/sunscreen/advice"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="color: inherit; text-decoration: underline;"
+          >Cancer Council Australia guidelines</a>.
+        </p>
       </article>
     </div>
   </section>

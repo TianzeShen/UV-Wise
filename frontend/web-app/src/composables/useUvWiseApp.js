@@ -96,12 +96,7 @@ export function useUvWiseApp() {
 
   const dashboardHighlights = computed(() => [
     {
-      label: 'UV Index',
-      value: uvData.uv_index?.toFixed?.(1) ?? uvData.uv_index,
-      helper: uvCategory.value,
-    },
-    {
-      label: 'Dosage',
+      label: 'Sunscreen Dosage',
       value: uvData.protection_guidance.sunscreen_dosage,
       helper: 'Based on current UV conditions',
     },
@@ -492,7 +487,6 @@ export function useUvWiseApp() {
     startProtectionTimer,
     timerDisplay,
     clearProtectionTimer,
-    useMockData,
     userLocation,
     uvCategory,
     uvData,
