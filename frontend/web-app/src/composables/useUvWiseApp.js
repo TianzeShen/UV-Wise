@@ -448,35 +448,16 @@ export function useUvWiseApp() {
   async function loadAwareness() {
     awarenessLoading.value = true
     try {
-      if (useMockData.value) {
-        const localData = await loadLocalAwarenessCsv()
-        const mock = createMockAwarenessResponse()
-        awarenessData.melanoma_trend = localData.melanoma_trend
-        awarenessData.uv_history = localData.uv_history
-        awarenessData.protection_behaviours = mock.statistics.protection_behaviours
-        educationCard.myth = mock.education.myth
-        educationCard.fact = mock.education.fact
-        return
-      }
-
-      const [statistics, education] = await Promise.all([
-        fetchJson(`${apiBaseUrl.value}/api/v1/awareness/statistics`),
-        fetchJson(`${apiBaseUrl.value}/api/v1/awareness/education`),
-      ])
-      awarenessData.melanoma_trend = statistics.melanoma_trend || statistics.cancer_statistics
-      awarenessData.uv_history = statistics.uv_history || statistics.heat_trends
-      awarenessData.protection_behaviours =
-        statistics.protection_behaviours || awarenessData.protection_behaviours
-      educationCard.myth = education.myth
-      educationCard.fact = education.fact
-    } catch {
-      useMockData.value = true
+      // Always use local data for awareness
+      const localData = await loadLocalAwarenessCsv()
       const mock = createMockAwarenessResponse()
-      awarenessData.melanoma_trend = mock.statistics.melanoma_trend
-      awarenessData.uv_history = mock.statistics.uv_history
+      awarenessData.melanoma_trend = localData.melanoma_trend
+      awarenessData.uv_history = localData.uv_history
       awarenessData.protection_behaviours = mock.statistics.protection_behaviours
       educationCard.myth = mock.education.myth
       educationCard.fact = mock.education.fact
+    } catch (e) {
+      console.error('Failed to load awareness data', e)
     } finally {
       awarenessLoading.value = false
     }
