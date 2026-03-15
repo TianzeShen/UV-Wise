@@ -8,12 +8,12 @@ const pages = [
 ]
 
 const skinTypes = [
-  { value: 1, label: 'Type I', note: 'Very fair, always burns', tone: '#f6d8c6', accent: '#fff2e8' },
-  { value: 2, label: 'Type II', note: 'Fair, burns easily', tone: '#ebc2a5', accent: '#f8e5d4' },
-  { value: 3, label: 'Type III', note: 'Medium, sometimes burns', tone: '#cf9f79', accent: '#e7c6a9' },
-  { value: 4, label: 'Type IV', note: 'Olive, rarely burns', tone: '#b57e56', accent: '#d9ab82' },
-  { value: 5, label: 'Type V', note: 'Brown, very rarely burns', tone: '#8a5a3b', accent: '#b18462' },
-  { value: 6, label: 'Type VI', note: 'Deeply pigmented, almost never burns', tone: '#5b3928', accent: '#7a5440' },
+  { value: 1, label: 'Fair', note: 'Always burns', tone: '#f6d8c6', accent: '#fff2e8' },
+  { value: 2, label: 'Light', note: 'Burns easily', tone: '#ebc2a5', accent: '#f8e5d4' },
+  { value: 3, label: 'Medium', note: 'Sometimes burns', tone: '#cf9f79', accent: '#e7c6a9' },
+  { value: 4, label: 'Olive', note: 'Rarely burns', tone: '#b57e56', accent: '#d9ab82' },
+  { value: 5, label: 'Dark', note: 'Very rarely burns', tone: '#8a5a3b', accent: '#b18462' },
+  { value: 6, label: 'Deep', note: 'Almost never burns', tone: '#5b3928', accent: '#7a5440' },
 ]
 
 export function useUvWiseApp() {
@@ -302,32 +302,32 @@ export function useUvWiseApp() {
   function createMockAdviceResponse() {
     const map = {
       1: {
-        skin_type_desc: 'Very fair skin, always burns quickly',
+        skin_type_desc: 'Always burns',
         risk_assessment: 'Very high burn risk under Australian UV conditions.',
         personalized_tips: 'Reapply sunscreen every 60-90 minutes and prioritise shade.',
       },
       2: {
-        skin_type_desc: 'Fair skin, burns easily',
+        skin_type_desc: 'Burns easily',
         risk_assessment: 'High risk of sunburn and long-term DNA damage.',
         personalized_tips: 'Increase sunscreen reapplication frequency to every 90 minutes.',
       },
       3: {
-        skin_type_desc: 'Medium skin, can tan but still burns',
+        skin_type_desc: 'Sometimes burns',
         risk_assessment: 'Moderate risk, especially around midday UV peaks.',
         personalized_tips: 'Use SPF 50+ and wear a hat during extended outdoor time.',
       },
       4: {
-        skin_type_desc: 'Olive skin, rarely burns',
+        skin_type_desc: 'Rarely burns',
         risk_assessment: 'Lower burn risk, but UV damage still accumulates.',
         personalized_tips: 'Keep using sunscreen and protective clothing on high UV days.',
       },
       5: {
-        skin_type_desc: 'Brown skin, very rarely burns',
+        skin_type_desc: 'Very rarely burns',
         risk_assessment: 'Sunburn is less common, but UV exposure still harms skin.',
         personalized_tips: 'Use broad-spectrum sunscreen and do not skip eye protection.',
       },
       6: {
-        skin_type_desc: 'Deeply pigmented skin, almost never burns',
+        skin_type_desc: 'Almost never burns',
         risk_assessment: 'Visible burning may be rare, but cumulative UV damage still matters.',
         personalized_tips: 'Maintain sun-safe habits and use sunscreen during prolonged exposure.',
       },

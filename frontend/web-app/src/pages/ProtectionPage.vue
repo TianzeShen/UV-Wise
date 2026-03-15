@@ -57,16 +57,20 @@ defineEmits(['update:skinType'])
 
     <div class="dashboard-grid protection-grid">
       <article class="feature-card advice-card advice-card-wide">
-        <p class="card-label">Current advice</p>
-        <h3>{{ personalizedAdvice.skin_type_desc }}</h3>
+        <p class="card-label">Skin type</p>
+        <h3>{{ skinTypes[skinType - 1].label }} - {{ personalizedAdvice.skin_type_desc }}</h3>
         <div class="advice-copy">
           <div>
             <span class="sub-label">Risk assessment</span>
             <p>{{ personalizedAdvice.risk_assessment }}</p>
           </div>
           <div>
-            <span class="sub-label">Protection tips</span>
-            <p>{{ personalizedAdvice.personalized_tips }}</p>
+            <span class="sub-label">Sunscreen Dosage</span>
+            <p>{{ uvData.protection_guidance.sunscreen_dosage }}</p>
+          </div>
+          <div>
+            <span class="sub-label">Recommended Clothing</span>
+            <p>{{ uvData.protection_guidance.clothing }}</p>
           </div>
           <div>
             <span class="sub-label">Current UV context</span>

@@ -8,12 +8,12 @@ class ProtectionService:
         """
         # Risk levels based on skin type (Fitzpatrick 1 = most sensitive, 6 = most resilient)
         risk_map = {
-            1: "Very High - Burns easily, never tans",
-            2: "High - Burns easily, tans minimally",
-            3: "Moderate - Sometimes burns, gradually tans",
-            4: "Low - Burns minimally, always tans well",
-            5: "Very Low - Rarely burns, tans profusely",
-            6: "Minimal - Never burns, deeply pigmented"
+            1: "Burns easily, never tans",
+            2: "Burns easily, tans minimally",
+            3: "Sometimes burns, gradually tans",
+            4: "Burns minimally, always tans well",
+            5: "Rarely burns, tans profusely",
+            6: "Never burns, deeply pigmented"
         }
         
         base_desc = risk_map.get(skin_type, "Unknown skin type")

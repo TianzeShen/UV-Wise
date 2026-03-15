@@ -47,7 +47,7 @@ class UVService:
             action_rec = "Stay indoors if possible"
 
         return ProtectionGuidance(
-            sunscreen_dosage=f"{teaspoons} for face/neck",
+            sunscreen_dosage=f"{teaspoons} for face and neck",
             clothing=clothing_rec,
             action=action_rec
         )
