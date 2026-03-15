@@ -37,7 +37,7 @@ class ProtectionService:
 
         if current_uv < 3:
             if skin_type <= 2:
-                sunscreen = "0.5 teaspoon if outdoors for >1 hour."
+                sunscreen = "0.5 teaspoon if outdoors for more than 1 hour."
                 clothing = "Sunglasses recommended."
             else:
                 sunscreen = "Not strictly necessary."
@@ -51,22 +51,22 @@ class ProtectionService:
                 sunscreen = "0.5 teaspoon for face and neck."
                 clothing = "Hat and sunglasses."
             else:
-                sunscreen = "Optional for long exposure."
-                clothing = "Optional hat."
+                sunscreen = "0.5 teaspoon for face and neck if outdoors for more than 1 hour."
+                clothing = "Optional hat and sunglasses."
         
         elif 6 <= current_uv < 11:
             if skin_type <= 2:
-                sunscreen = "2 teaspoons + frequent reapplication."
+                sunscreen = "2 teaspoons cover all exposed skin."
                 clothing = "Long sleeves, hat, and sunglasses."
             elif skin_type <= 4:
-                sunscreen = "1 teaspoon for face and neck."
+                sunscreen = "1 teaspoon cover all exposed skin."
                 clothing = "Long sleeves, hat, and sunglasses."
             else:
-                sunscreen = "1 teaspoon for face and neck."
+                sunscreen = "1 teaspoon cover all exposed skin."
                 clothing = "Hat and sunglasses."
         
         else:  # current_uv >= 11
-            sunscreen = "2 teaspoons + cover all exposed skin."
+            sunscreen = "2 teaspoons cover all exposed skin and frequent reapplication."
             clothing = "UV-protection clothing, hat, and sunglasses."
 
         return PersonalizedAdviceResponse(
