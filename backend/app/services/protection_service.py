@@ -39,7 +39,7 @@ class ProtectionService:
             sunscreen = "Not strictly necessary."
             clothing = "No special protection needed."
 
-        if current_uv < 3:
+        elif current_uv < 3:
             if skin_type <= 2:
                 sunscreen = "0.5 teaspoon if outdoors for more than 1 hour."
                 clothing = "Sunglasses recommended."
