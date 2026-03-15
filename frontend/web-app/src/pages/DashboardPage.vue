@@ -101,27 +101,10 @@ defineEmits(['search-location', 'update:locationQuery'])
 
       <article class="feature-card icon-card">
         <p class="card-label">Recommended wear</p>
-        <h3>Outdoor essentials</h3>
-        <div class="icon-row">
-          <div v-for="item in clothingItems" :key="item.label" class="icon-pill">
-            <span class="icon-symbol">{{ item.label.slice(0, 1) }}</span>
-            <span>{{ item.label }}</span>
-          </div>
-        </div>
-        <p class="helper-text">Use these as a quick checklist before heading into stronger sun.</p>
-      </article>
-
-      <article class="feature-card guidance-card landing-guidance-card">
-        <p class="card-label">Outdoor action</p>
-        <h3>{{ uvData.protection_guidance.action }}</h3>
-        <p class="helper-text">Plan your day around the strongest UV window and use the guidance below before heading outside.</p>
-      </article>
-
-      <article class="feature-card guidance-card landing-guidance-card">
-        <p class="card-label">Protection guidance</p>
         <h3>{{ uvData.protection_guidance.clothing }}</h3>
         <p class="helper-text">Pair sunscreen with protective clothing for better coverage during high UV periods.</p>
       </article>
+
     </div>
   </section>
 </template>
