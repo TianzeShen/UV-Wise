@@ -66,7 +66,7 @@ defineEmits(['update:skinType'])
           </div>
           <div>
             <span class="sub-label">Sunscreen Dosage</span>
-            <p>{{ personalizedAdvice.sunscreen_dosage }}</p>
+            <p v-html="personalizedAdvice.sunscreen_dosage"></p>
           </div>
           <div>
             <span class="sub-label">Recommended Clothing</span>

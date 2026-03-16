@@ -73,6 +73,9 @@ class ProtectionService:
             sunscreen = "2 teaspoons cover all exposed skin and frequent reapplication."
             clothing = "UV-protection clothing, hat, and sunglasses."
 
+        if current_uv >= 3:
+            sunscreen += '<br>7 teaspoons for full-body coverage for beach and water activities.<br><small>Recommended by <a href="https://www.cancer.org.au/cancer-information/causes-and-prevention/sun-safety/sunscreen/advice" target="_blank" rel="noopener noreferrer">Cancer Council Australia guidelines</a>.</small>'
+
         return PersonalizedAdviceResponse(
             skin_type_desc=base_desc,
             risk_assessment=f"{risk_level} risk of sunburn today.",
