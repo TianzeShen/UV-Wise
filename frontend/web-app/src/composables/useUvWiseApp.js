@@ -563,7 +563,7 @@ export function useUvWiseApp() {
 
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`,
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=au&q=${encodeURIComponent(query)}`,
       )
       if (!response.ok) {
         throw new Error(`Location search failed: ${response.status}`)
@@ -575,13 +575,35 @@ export function useUvWiseApp() {
         return
       }
 
-      const result = results[0]
+      // Format results and sort by distance to current userLocation to find the most relevant one
+      const formattedResults = results.map((r) => ({
+        lat: Number(r.lat),
+        lon: Number(r.lon),
+        name: r.display_name,
+        shortName: r.display_name.split(',').slice(0, 2).join(', '),
+      }))
+
+      if (userLocation.lat && userLocation.lon) {
+        formattedResults.forEach((r) => {
+          r.distance = calculateDistance(userLocation.lat, userLocation.lon, r.lat, r.lon)
+        })
+        formattedResults.sort((a, b) => a.distance - b.distance)
+      }
+
+      const result = formattedResults[0]
       userLocation.lat = Number(Number(result.lat).toFixed(4))
       userLocation.lon = Number(Number(result.lon).toFixed(4))
-      userLocation.name = result.display_name.split(',').slice(0, 2).join(', ')
+      userLocation.name = result.shortName || result.name
       locationQuery.value = userLocation.name
       // locationSearchStatus.value = `Showing UV for ${userLocation.name}.`
       locationSearchStatus.value = ''
+      
+      addToSearchHistory({
+        name: userLocation.name,
+        lat: userLocation.lat,
+        lon: userLocation.lon,
+      })
+
       await refreshAllData()
     } catch {
       locationSearchStatus.value = 'Location search is unavailable right now. Please try again.'
