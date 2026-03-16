@@ -200,6 +200,80 @@ function selectItem(item) {
       <article class="feature-card icon-card">
         <p class="card-label">Recommended wear</p>
         <h3>{{ uvData.protection_guidance.clothing }}</h3>
+        <div class="icon-row">
+          <div v-for="item in clothingItems" :key="item.label" class="icon-pill">
+            <span class="icon-symbol" :aria-label="item.label" role="img">
+              <svg
+                v-if="item.icon === 'hat'"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M8 10.5a4 4 0 1 1 8 0v1.2c1.9.3 3.9.9 5 1.8-2 1.7-5.8 2.8-9 2.8s-7-1.1-9-2.8c1.1-.9 3.1-1.5 5-1.8v-1.2Z"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M3 13.5c2.2 1 5.7 1.5 9 1.5s6.8-.5 9-1.5"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M2 15.8c2.8 1.4 6.4 2.2 10 2.2s7.2-.8 10-2.2"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+
+              <svg
+                v-else-if="item.icon === 'glasses'"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M3 10.5h18"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M4.5 10.5 6 16a2 2 0 0 0 1.9 1.5h2.2A2 2 0 0 0 12 15.5v-1a2 2 0 0 0-2-2H6.7a2 2 0 0 0-2.2 1.9Z"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="m19.5 10.5-1.5 5.5a2 2 0 0 1-1.9 1.5h-2.2A2 2 0 0 1 12 15.5v-1a2 2 0 0 1 2-2h3.3a2 2 0 0 1 2.2 1.9Z"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <svg
+                v-else
+                viewBox="-236 28 256 256"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M-190.2 277.7V125.9c0-4 3.3-6.7 6.7-6.7 4 0 6.7 2.7 6.7 6.7v151.7h137.7V125.9c0-4 3.3-6.7 6.7-6.7 4 0 6.7 3.3 6.7 6.7v151.7H17V115.2c.7-40.1-23.4-71.5-62.2-71.5L-108 97.2l-62.8-53.5c-38.1 0-62.2 31.4-62.2 70.9v163.1h42.8Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span>{{ item.label }}</span>
+          </div>
+        </div>
         <p class="helper-text">Pair sunscreen with protective clothing for better coverage during high UV periods.</p>
       </article>
 

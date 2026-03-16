@@ -766,6 +766,11 @@ button {
   font-weight: 700;
 }
 
+.icon-symbol svg {
+  width: 18px;
+  height: 18px;
+}
+
 .mini-chart {
   display: flex;
   align-items: end;
