@@ -21,10 +21,19 @@ const {
   locationQuery,
   locationSearchStatus,
   locationSuggestions,
+  notificationPermission,
+  notificationSupported,
   pages,
   personalizedAdvice,
   protectionTimerActive,
+  timerCompleted,
+  timerDurationLabel,
+  timerMinutesPart,
+  timerSecondsPart,
+  timerDurationSeconds,
+  timerReminderMessage,
   requestLocation,
+  requestNotificationPermission,
   resetProtectionTimer,
   searchHistory,
   searchLocationByName,
@@ -32,7 +41,11 @@ const {
   skinType,
   skinTypes,
   startProtectionTimer,
+  dismissTimerReminder,
   timerDisplay,
+  updateTimerDuration,
+  updateTimerMinutes,
+  updateTimerSeconds,
   userLocation,
   uvCategory,
   uvData,
@@ -92,11 +105,24 @@ const {
 
       <TimerPage
         v-else
+        :notification-permission="notificationPermission"
+        :notification-supported="notificationSupported"
         :protection-timer-active="protectionTimerActive"
+        :timer-completed="timerCompleted"
+        :timer-duration-label="timerDurationLabel"
+        :timer-minutes-part="timerMinutesPart"
+        :timer-seconds-part="timerSecondsPart"
+        :timer-duration-seconds="timerDurationSeconds"
         :timer-display="timerDisplay"
+        :timer-reminder-message="timerReminderMessage"
         @clear="clearProtectionTimer"
+        @dismiss-reminder="dismissTimerReminder"
+        @enable-notifications="requestNotificationPermission"
         @reset="resetProtectionTimer"
         @start="startProtectionTimer"
+        @update:timer-duration="updateTimerDuration"
+        @update:timer-minutes="updateTimerMinutes"
+        @update:timer-seconds="updateTimerSeconds"
       />
     </main>
   </div>

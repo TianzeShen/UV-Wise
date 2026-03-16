@@ -31,8 +31,15 @@ export function useUvWiseApp() {
   const uvLoading = ref(false)
   const timerNow = ref(Date.now())
   const skinType = ref(Number(localStorage.getItem('uvwise-skin-type')) || 2)
+  const timerDurationSeconds = ref(Number(localStorage.getItem('uvwise-timer-duration-seconds')) || 7200)
   const protectionTimerEnd = ref(Number(localStorage.getItem('uvwise-timer-end')) || 0)
   const protectionTimerActive = ref(protectionTimerEnd.value > Date.now())
+  const timerReminderMessage = ref('')
+  const timerCompleted = ref(false)
+  const notificationSupported = ref(typeof window !== 'undefined' && 'Notification' in window)
+  const notificationPermission = ref(
+    notificationSupported.value ? Notification.permission : 'unsupported',
+  )
   const searchHistory = ref(JSON.parse(localStorage.getItem('uvwise-search-history') || '[]'))
   const locationSuggestions = ref([])
 
@@ -128,6 +135,27 @@ export function useUvWiseApp() {
     const seconds = String(totalSeconds % 60).padStart(2, '0')
     return `${hours}:${minutes}:${seconds}`
   })
+
+  const timerDurationLabel = computed(() => {
+    const totalSeconds = Number(timerDurationSeconds.value || 0)
+    if (totalSeconds <= 0) return 'Custom sunscreen reminder'
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+
+    if (hours > 0 && minutes === 0 && seconds === 0) {
+      return `${hours}-hour sunscreen reminder`
+    }
+
+    if (hours === 0 && minutes > 0 && seconds === 0) {
+      return `${minutes}-minute sunscreen reminder`
+    }
+
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} reminder`
+  })
+
+  const timerMinutesPart = computed(() => Math.floor(timerDurationSeconds.value / 60))
+  const timerSecondsPart = computed(() => timerDurationSeconds.value % 60)
 
   const awarenessSummary = computed(() => {
     if (
@@ -562,20 +590,72 @@ export function useUvWiseApp() {
     }
   }
 
-  function startProtectionTimer() {
-    protectionTimerEnd.value = Date.now() + 2 * 60 * 60 * 1000
+  function startProtectionTimer(customSeconds = timerDurationSeconds.value) {
+    const parsedSeconds = Math.max(1, Math.min(24 * 60 * 60, Number(customSeconds) || 7200))
+    timerDurationSeconds.value = parsedSeconds
+    timerReminderMessage.value = ''
+    timerCompleted.value = false
+    protectionTimerEnd.value = Date.now() + parsedSeconds * 1000
     protectionTimerActive.value = true
+    localStorage.setItem('uvwise-timer-duration-seconds', String(parsedSeconds))
     localStorage.setItem('uvwise-timer-end', String(protectionTimerEnd.value))
   }
 
   function resetProtectionTimer() {
-    startProtectionTimer()
+    startProtectionTimer(timerDurationSeconds.value)
   }
 
   function clearProtectionTimer() {
     protectionTimerEnd.value = 0
     protectionTimerActive.value = false
+    timerCompleted.value = false
+    timerReminderMessage.value = ''
     localStorage.removeItem('uvwise-timer-end')
+  }
+
+  function updateTimerDuration(seconds) {
+    const parsedSeconds = Math.max(1, Math.min(24 * 60 * 60, Number(seconds) || 7200))
+    timerDurationSeconds.value = parsedSeconds
+    localStorage.setItem('uvwise-timer-duration-seconds', String(parsedSeconds))
+  }
+
+  function updateTimerMinutes(minutes) {
+    const parsedMinutes = Math.max(0, Math.min(1440, Number(minutes) || 0))
+    updateTimerDuration(parsedMinutes * 60 + timerSecondsPart.value)
+  }
+
+  function updateTimerSeconds(seconds) {
+    const parsedSeconds = Math.max(0, Math.min(59, Number(seconds) || 0))
+    updateTimerDuration(timerMinutesPart.value * 60 + parsedSeconds)
+  }
+
+  function dismissTimerReminder() {
+    timerReminderMessage.value = ''
+    timerCompleted.value = false
+  }
+
+  async function requestNotificationPermission() {
+    if (!notificationSupported.value) return 'unsupported'
+    const permission = await Notification.requestPermission()
+    notificationPermission.value = permission
+    return permission
+  }
+
+  function sendTimerNotification() {
+    if (!notificationSupported.value || notificationPermission.value !== 'granted') return
+    const body = `Your protection timer has ended. Time to reapply sunscreen.`
+    const notification = new Notification('UV Wise reminder', {
+      body,
+      tag: 'uvwise-protection-timer',
+      renotify: true,
+    })
+
+    notification.onclick = () => {
+      if (typeof window !== 'undefined') {
+        window.focus()
+      }
+      notification.close()
+    }
   }
 
   watch(skinType, () => {
@@ -588,7 +668,13 @@ export function useUvWiseApp() {
   })
 
   watch([timerRemainingMs, protectionTimerEnd], () => {
+    const wasActive = protectionTimerActive.value
     protectionTimerActive.value = protectionTimerEnd.value > Date.now()
+    if (wasActive && !protectionTimerActive.value && protectionTimerEnd.value !== 0) {
+      timerCompleted.value = true
+      timerReminderMessage.value = 'Time to reapply sunscreen. Protect exposed skin before heading back outside.'
+      sendTimerNotification()
+    }
     if (!protectionTimerActive.value && protectionTimerEnd.value !== 0) {
       localStorage.removeItem('uvwise-timer-end')
     }
@@ -625,7 +711,16 @@ export function useUvWiseApp() {
     pages,
     personalizedAdvice,
     protectionTimerActive,
+    notificationPermission,
+    notificationSupported,
+    timerCompleted,
+    timerDurationLabel,
+    timerMinutesPart,
+    timerSecondsPart,
+    timerDurationSeconds,
+    timerReminderMessage,
     requestLocation,
+    requestNotificationPermission,
     resetProtectionTimer,
     searchHistory,
     searchLocationByName,
@@ -634,7 +729,11 @@ export function useUvWiseApp() {
     skinType,
     skinTypes,
     startProtectionTimer,
+    dismissTimerReminder,
     timerDisplay,
+    updateTimerDuration,
+    updateTimerMinutes,
+    updateTimerSeconds,
     clearProtectionTimer,
     userLocation,
     uvCategory,

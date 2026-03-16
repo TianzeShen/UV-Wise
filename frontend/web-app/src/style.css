@@ -1028,6 +1028,72 @@ button {
   margin-top: 18px;
 }
 
+.timer-duration-controls {
+  margin-top: 18px;
+}
+
+.timer-duration-field {
+  display: inline-grid;
+  gap: 8px;
+  color: #17324d;
+}
+
+.timer-duration-split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.timer-duration-input {
+  width: 150px;
+  padding: 12px 14px;
+  border: 1px solid rgba(23, 50, 77, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #17324d;
+}
+
+.timer-duration-input:focus {
+  outline: 2px solid rgba(47, 104, 168, 0.18);
+  border-color: rgba(47, 104, 168, 0.24);
+}
+
+.timer-reminder-banner {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 237, 213, 0.96), rgba(255, 247, 237, 0.98));
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  color: #8a3c11;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.timer-reminder-dismiss {
+  background: rgba(255, 255, 255, 0.76);
+  color: #8a3c11;
+  flex: 0 0 auto;
+}
+
+.timer-notification-panel {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(243, 248, 252, 0.96), rgba(235, 243, 249, 0.96));
+  border: 1px solid rgba(23, 50, 77, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.timer-notification-panel .helper-text {
+  margin: 6px 0 0;
+}
+
 @media (max-width: 960px) {
   .uv-card,
   .metric-card,
