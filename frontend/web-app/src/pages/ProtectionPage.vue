@@ -57,27 +57,37 @@ defineEmits(['update:skinType'])
 
     <div class="dashboard-grid protection-grid">
       <article class="feature-card advice-card advice-card-wide">
-        <p class="card-label">Skin type</p>
-        <h3>{{ skinTypes[skinType - 1].label }} - {{ personalizedAdvice.skin_type_desc }}</h3>
-        <div class="advice-copy">
+        <div class="protection-summary-header">
           <div>
+            <p class="card-label">Skin type</p>
+            <h3>{{ skinTypes[skinType - 1].label }} - {{ personalizedAdvice.skin_type_desc }}</h3>
+          </div>
+        </div>
+
+        <div class="advice-copy advice-layout-grid">
+          <div class="advice-section-card advice-section-card-wide">
             <span class="sub-label">Risk assessment</span>
             <p>{{ personalizedAdvice.risk_assessment }}</p>
           </div>
-          <div>
-            <span class="sub-label">Sunscreen Dosage</span>
+
+          <div class="advice-section-card advice-section-card-wide">
+            <span class="sub-label">Sunscreen dosage</span>
             <p v-html="personalizedAdvice.sunscreen_dosage"></p>
           </div>
-          <div>
-            <span class="sub-label">Recommended Clothing</span>
+
+          <div class="advice-section-card advice-section-card-wide">
+            <span class="sub-label">Recommended clothing</span>
             <p>{{ personalizedAdvice.clothing }}</p>
           </div>
-          <div>
+
+          <div class="advice-section-card advice-section-card-wide">
             <span class="sub-label">Current UV context</span>
             <p>Advice is paired with UV {{ uvData.uv_index }} and the current outdoor guidance.</p>
           </div>
         </div>
-        <p class="helper-text">{{ adviceLoading ? 'Refreshing personalized advice...' : 'Advice updates with your skin type and the current UV level.' }}</p>
+        <p class="helper-text protection-helper-text">
+          {{ adviceLoading ? 'Refreshing personalized advice...' : 'Advice updates with your skin type and the current UV level.' }}
+        </p>
       </article>
     </div>
   </section>
