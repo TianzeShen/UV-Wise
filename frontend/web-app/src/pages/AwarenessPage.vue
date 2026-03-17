@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import PlotlyChart from '../components/PlotlyChart.vue'
 import PageSectionHeader from '../components/PageSectionHeader.vue'
 
@@ -45,6 +45,21 @@ const awarenessSources = [
 
 const behaviourHover = ref(null)
 const showAllMyths = ref(false)
+const viewportWidth = ref(typeof window === 'undefined' ? 1280 : window.innerWidth)
+
+const isMobileChart = computed(() => viewportWidth.value <= 640)
+
+function updateViewportWidth() {
+  viewportWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+  window.addEventListener('resize', updateViewportWidth)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateViewportWidth)
+})
 
 const mythFactPairs = computed(() => [
   {
@@ -71,19 +86,31 @@ const visibleMythFactPairs = computed(() =>
 
 const hasMoreMyths = computed(() => mythFactPairs.value.length > 2)
 
+const mobileMelanomaLabels = computed(() =>
+  isMobileChart.value
+    ? props.awarenessData.melanoma_trend.labels.filter((_, index) => index % 2 === 0)
+    : props.awarenessData.melanoma_trend.labels,
+)
+
+const mobileMelanomaValues = computed(() =>
+  isMobileChart.value
+    ? props.awarenessData.melanoma_trend.data.filter((_, index) => index % 2 === 0)
+    : props.awarenessData.melanoma_trend.data,
+)
+
 const melanomaPlotData = computed(() => [
   {
-    x: props.awarenessData.melanoma_trend.labels,
-    y: props.awarenessData.melanoma_trend.data,
+    x: mobileMelanomaLabels.value,
+    y: mobileMelanomaValues.value,
     type: 'scatter',
     mode: 'lines+markers',
     line: {
       color: '#356fb6',
-      width: 4,
+      width: isMobileChart.value ? 3 : 4,
     },
     marker: {
       color: '#356fb6',
-      size: 8,
+      size: isMobileChart.value ? 6 : 8,
     },
     name: 'Cases',
     hovertemplate: 'Year: %{x}<br>Cases: %{y}<extra></extra>',
@@ -92,23 +119,28 @@ const melanomaPlotData = computed(() => [
 
 const melanomaPlotLayout = computed(() => ({
   title: {
-    text: 'Melanoma Incidence Trend for Gen Z (15-24)',
+    text: isMobileChart.value ? '' : 'Melanoma Incidence Trend for Gen Z (15-24)',
     font: {
-      size: 26,
+      size: isMobileChart.value ? 16 : 26,
       color: '#1a3350',
     },
   },
   paper_bgcolor: 'rgba(0,0,0,0)',
   plot_bgcolor: 'rgba(247,250,253,0.9)',
-  margin: { l: 70, r: 24, t: 88, b: 56 },
+  margin: isMobileChart.value
+    ? { l: 42, r: 10, t: 18, b: 40 }
+    : { l: 70, r: 24, t: 88, b: 56 },
   xaxis: {
-    title: { text: 'Year' },
+    title: { text: 'Year', font: { size: isMobileChart.value ? 11 : 14 } },
+    tickfont: { size: isMobileChart.value ? 10 : 12 },
+    nticks: isMobileChart.value ? 5 : undefined,
     showgrid: true,
     gridcolor: 'rgba(193, 214, 231, 0.45)',
     zeroline: false,
   },
   yaxis: {
-    title: { text: 'Number of Cases' },
+    title: { text: 'Cases', font: { size: isMobileChart.value ? 11 : 14 } },
+    tickfont: { size: isMobileChart.value ? 10 : 12 },
     showgrid: true,
     gridcolor: 'rgba(193, 214, 231, 0.45)',
     zeroline: false,
@@ -127,8 +159,63 @@ const uvPlotData = computed(() => {
   const maxDates = props.awarenessData.uv_history.max_dates
   const minDates = props.awarenessData.uv_history.min_dates
 
-  return [
+  const traces = [
     {
+      x: labels.map((year) => `${year}-07-01`),
+      y: average,
+      type: 'scatter',
+      mode: 'lines+markers',
+      line: {
+        color: '#e8942a',
+        width: isMobileChart.value ? 3 : 4,
+      },
+      marker: {
+        color: '#e8942a',
+        size: isMobileChart.value ? 6 : 8,
+      },
+      name: 'Yearly Average UV',
+      hovertemplate: 'Year: %{x|%Y}<br>Yearly Avg UV: %{y:.2f}<extra></extra>',
+    },
+    {
+      x: maxDates,
+      y: maxValues,
+      type: 'scatter',
+      mode: isMobileChart.value ? 'markers' : 'markers+text',
+      marker: {
+        color: '#e2555a',
+        size: isMobileChart.value ? 8 : 11,
+      },
+      text: isMobileChart.value ? [] : maxValues.map((value) => value.toFixed(2)),
+      textposition: 'top center',
+      textfont: {
+        size: isMobileChart.value ? 10 : 12,
+        color: '#1a3350',
+      },
+      name: 'Yearly Max UV',
+      hovertemplate: 'Date: %{x|%b %Y}<br>Yearly Max UV: %{y:.2f}<extra></extra>',
+    },
+    {
+      x: minDates,
+      y: minValues,
+      type: 'scatter',
+      mode: isMobileChart.value ? 'markers' : 'markers+text',
+      marker: {
+        color: '#2e9d8f',
+        size: isMobileChart.value ? 7 : 9,
+      },
+      text: isMobileChart.value ? [] : minValues.map((value) => value.toFixed(2)),
+      textposition: 'bottom center',
+      textfont: {
+        size: isMobileChart.value ? 10 : 12,
+        color: '#35506c',
+      },
+      name: 'Yearly Min UV',
+      hovertemplate: 'Date: %{x|%b %Y}<br>Yearly Min UV: %{y:.2f}<extra></extra>',
+    },
+  ]
+
+  if (!isMobileChart.value) {
+    traces.unshift({
       x: dailyDates,
       y: dailyValues,
       type: 'scatter',
@@ -139,92 +226,50 @@ const uvPlotData = computed(() => {
       },
       name: 'Daily UV Index',
       hovertemplate: 'Date: %{x}<br>Daily UV: %{y:.2f}<extra></extra>',
-    },
-    {
-      x: labels.map((year) => `${year}-07-01`),
-      y: average,
-      type: 'scatter',
-      mode: 'lines+markers',
-      line: {
-        color: '#e8942a',
-        width: 4,
-      },
-      marker: {
-        color: '#e8942a',
-        size: 8,
-      },
-      name: 'Yearly Average UV',
-      hovertemplate: 'Year: %{x|%Y}<br>Yearly Avg UV: %{y:.2f}<extra></extra>',
-    },
-    {
-      x: maxDates,
-      y: maxValues,
-      type: 'scatter',
-      mode: 'markers+text',
-      marker: {
-        color: '#e2555a',
-        size: 11,
-      },
-      text: maxValues.map((value) => value.toFixed(2)),
-      textposition: 'top center',
-      textfont: {
-        size: 12,
-        color: '#1a3350',
-      },
-      name: 'Yearly Max UV',
-      hovertemplate: 'Date: %{x|%b %Y}<br>Yearly Max UV: %{y:.2f}<extra></extra>',
-    },
-    {
-      x: minDates,
-      y: minValues,
-      type: 'scatter',
-      mode: 'markers+text',
-      marker: {
-        color: '#2e9d8f',
-        size: 9,
-      },
-      text: minValues.map((value) => value.toFixed(2)),
-      textposition: 'bottom center',
-      textfont: {
-        size: 12,
-        color: '#35506c',
-      },
-      name: 'Yearly Min UV',
-      hovertemplate: 'Date: %{x|%b %Y}<br>Yearly Min UV: %{y:.2f}<extra></extra>',
-    },
-  ]
+    })
+  }
+
+  return traces
 })
 
 const uvPlotLayout = computed(() => ({
   title: {
-    text: 'Melbourne Daily UV Index with Yearly Average, Max and Min (2007-2024)',
+    text: isMobileChart.value ? '' : 'Melbourne Daily UV Index with Yearly Average, Max and Min (2007-2024)',
     font: {
-      size: 24,
+      size: isMobileChart.value ? 16 : 24,
       color: '#1a3350',
     },
   },
   paper_bgcolor: 'rgba(0,0,0,0)',
   plot_bgcolor: 'rgba(247,250,253,0.9)',
-  margin: { l: 70, r: 24, t: 88, b: 56 },
+  margin: isMobileChart.value
+    ? { l: 44, r: 10, t: 18, b: 40 }
+    : { l: 70, r: 24, t: 88, b: 56 },
   xaxis: {
-    title: { text: 'Date' },
+    title: { text: 'Date', font: { size: isMobileChart.value ? 11 : 14 } },
     type: 'date',
+    tickfont: { size: isMobileChart.value ? 9 : 12 },
+    nticks: isMobileChart.value ? 4 : undefined,
     showgrid: true,
     gridcolor: 'rgba(193, 214, 231, 0.45)',
     zeroline: false,
   },
   yaxis: {
-    title: { text: 'UV Index' },
+    title: { text: 'UV Index', font: { size: isMobileChart.value ? 11 : 14 } },
+    tickfont: { size: isMobileChart.value ? 10 : 12 },
     showgrid: true,
     gridcolor: 'rgba(193, 214, 231, 0.45)',
     zeroline: false,
   },
   hovermode: 'x unified',
   legend: {
-    orientation: 'h',
-    y: 1.12,
-    x: 0.5,
-    xanchor: 'center',
+    orientation: isMobileChart.value ? 'v' : 'h',
+    y: isMobileChart.value ? 0.99 : 1.12,
+    x: isMobileChart.value ? 0.02 : 0.5,
+    xanchor: isMobileChart.value ? 'left' : 'center',
+    font: {
+      size: isMobileChart.value ? 10 : 12,
+    },
   },
 }))
 
