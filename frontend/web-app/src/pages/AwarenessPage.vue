@@ -264,7 +264,7 @@ function toggleMythExpansion() {
 
 <template>
   <section class="page-section">
-    <PageSectionHeader eyebrow="Learn and explore" title="Awareness" badge="Insights" />
+    <PageSectionHeader eyebrow="Learn and explore" title="Awareness" />
 
     <div class="dashboard-grid awareness-grid rich-awareness-grid stacked-awareness-grid">
       <article class="feature-card chart-card awareness-full-chart">

@@ -32,7 +32,6 @@ defineEmits(['update:skinType'])
     <PageSectionHeader
       eyebrow="Personalized guidance"
       title="Protection"
-      badge="Personalized advice"
     />
 
     <div class="protection-picker">

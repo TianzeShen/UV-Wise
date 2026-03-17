@@ -61,7 +61,6 @@ defineEmits([
     <PageSectionHeader
       eyebrow="Daily routine"
       title="Protection Timer"
-      badge="Stay protected"
     />
 
     <div class="dashboard-grid timer-grid">

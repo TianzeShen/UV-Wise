@@ -98,7 +98,7 @@ function selectItem(item) {
         </p>
 
         <div class="landing-search-wrapper">
-          <div class="landing-search">
+          <div class="landing-search landing-search-compact">
             <button
               class="location-icon-button"
               title="Use current location"
@@ -172,7 +172,6 @@ function selectItem(item) {
       <article class="feature-card landing-summary-card landing-card-wide">
         <p class="card-label">Current location</p>
         <h2>{{ userLocation.name }}</h2>
-        <p class="meta">{{ userLocation.lat }}, {{ userLocation.lon }}</p>
         <div class="landing-uv-readout">
           <div>
             <span class="card-label">UV Index</span>

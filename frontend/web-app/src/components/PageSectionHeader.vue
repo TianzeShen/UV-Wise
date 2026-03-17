@@ -26,6 +26,7 @@ defineProps({
       <h2>{{ title }}</h2>
     </div>
     <span
+      v-if="badge"
       class="badge"
       :class="{ neutral: !badgeColor }"
       :style="badgeColor ? { backgroundColor: badgeColor } : undefined"
