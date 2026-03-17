@@ -58,6 +58,7 @@ const emit = defineEmits([
 
 const showDropdown = ref(false)
 const debounceTimeout = ref(null)
+const resultsSection = ref(null)
 
 function handleInput(event) {
   const value = event.target.value
@@ -83,6 +84,18 @@ function handleBlur() {
 function selectItem(item) {
   emit('select-location', item)
   showDropdown.value = false
+}
+
+function scrollToResults() {
+  resultsSection.value?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+  })
+}
+
+function handleSearch() {
+  emit('search-location')
+  scrollToResults()
 }
 </script>
 
@@ -128,7 +141,7 @@ function selectItem(item) {
               @blur="handleBlur"
               @keyup.enter="$emit('search-location')"
             />
-            <button class="landing-search-button" @click="$emit('search-location')">
+            <button class="landing-search-button" @click="handleSearch">
               {{ isResolvingLocation ? 'Searching...' : 'Check UV' }}
             </button>
           </div>
@@ -168,7 +181,7 @@ function selectItem(item) {
       </div>
     </div>
 
-    <div class="dashboard-grid landing-grid">
+    <div ref="resultsSection" class="dashboard-grid landing-grid">
       <article class="feature-card landing-summary-card landing-card-wide">
         <p class="card-label">Current location</p>
         <h2>{{ userLocation.name }}</h2>

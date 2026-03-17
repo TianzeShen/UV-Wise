@@ -265,7 +265,7 @@ button {
 
 .dashboard-home {
   display: grid;
-  gap: 22px;
+  gap: 48px;
   width: 100%;
 }
 
@@ -499,7 +499,7 @@ button {
 
 .landing-grid {
   width: min(1200px, calc(100% - 32px));
-  margin: 18px auto 24px;
+  margin: 64px auto 96px;
   position: relative;
   z-index: 1;
 }
@@ -1236,6 +1236,6 @@ button {
 
   .landing-grid {
     width: calc(100% - 20px);
-    margin: 12px auto 18px;
+    margin: 36px auto 56px;
   }
 }
