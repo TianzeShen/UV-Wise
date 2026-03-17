@@ -186,14 +186,8 @@ function handleSearch() {
         <p class="card-label">Current location</p>
         <h2>{{ userLocation.name }}</h2>
         <div class="landing-uv-readout">
-          <div>
-            <span class="card-label">UV Index</span>
-            <strong class="landing-uv-number">{{ uvData.uv_index }}</strong>
-          </div>
-          <div>
-            <span class="card-label">Risk</span>
-            <strong class="landing-uv-category">{{ uvCategory }}</strong>
-          </div>
+          <span class="card-label">Current UV status</span>
+          <strong class="landing-uv-inline">UV {{ uvData.uv_index }} | {{ uvCategory }}</strong>
         </div>
         <p class="landing-alert">{{ uvData.alert_message }}</p>
         <p class="helper-text">{{ uvLoading ? 'Refreshing UV forecast...' : 'Latest UV guidance loaded.' }}</p>

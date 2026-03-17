@@ -265,7 +265,7 @@ button {
 
 .dashboard-home {
   display: grid;
-  gap: 48px;
+  gap: 60px;
   width: 100%;
 }
 
@@ -464,24 +464,25 @@ button {
 }
 
 .landing-uv-readout {
-  display: flex;
-  gap: 30px;
+  display: grid;
+  gap: 8px;
   margin-top: 20px;
 }
 
-.landing-uv-number {
-  display: block;
-  margin-top: 10px;
-  font-size: 4rem;
-  line-height: 0.95;
+.landing-uv-inline {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: #17324d;
+  color: #f7fbff;
+  font-size: 1.7rem;
+  line-height: 1;
   color: #10263f;
-}
-
-.landing-uv-category {
-  display: block;
-  margin-top: 10px;
-  font-size: 1.5rem;
-  color: #10263f;
+  font-weight: 800;
+  box-shadow: 0 14px 28px rgba(23, 50, 77, 0.16);
+  color: #fff;
 }
 
 .landing-alert {
@@ -499,7 +500,7 @@ button {
 
 .landing-grid {
   width: min(1200px, calc(100% - 32px));
-  margin: 64px auto 96px;
+  margin: 88px auto 128px;
   position: relative;
   z-index: 1;
 }
@@ -579,6 +580,10 @@ button {
   grid-column: span 4;
 }
 
+.stacked-awareness-grid .awareness-full-chart {
+  padding: 22px 24px;
+}
+
 .chart-takeaway {
   margin: 12px 0 0;
   max-width: 72ch;
@@ -596,13 +601,13 @@ button {
 
 .awareness-plotly {
   margin-top: 18px;
-  min-height: 540px;
+  min-height: 430px;
 }
 
 .behaviour-bars {
   display: grid;
-  gap: 18px;
-  margin-top: 20px;
+  gap: 14px;
+  margin-top: 18px;
 }
 
 .behaviour-row {
@@ -617,7 +622,7 @@ button {
 
 .behaviour-track {
   position: relative;
-  height: 36px;
+  height: 32px;
   border-radius: 999px;
   background: #f3f7fb;
   overflow: hidden;
@@ -658,13 +663,13 @@ button {
 }
 
 .behaviour-hover-panel {
-  margin-top: 18px;
-  padding: 16px 18px;
+  margin-top: 14px;
+  padding: 14px 16px;
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(243, 248, 252, 0.96), rgba(235, 243, 249, 0.96));
   border: 1px solid rgba(23, 50, 77, 0.08);
   color: #35506c;
-  min-height: 116px;
+  min-height: 98px;
 }
 
 .behaviour-hover-panel.active {
@@ -1236,6 +1241,6 @@ button {
 
   .landing-grid {
     width: calc(100% - 20px);
-    margin: 36px auto 56px;
+    margin: 52px auto 76px;
   }
 }
